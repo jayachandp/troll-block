@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="tabbable">
+        <ul class="nav nav-tabs">
+            <li class="active"> <a href="/home/" data-toggel="tab">Followers</a></li>
+            <li><a href="/blocked_users" data-toggel="tab">Blocked Users</a></li>
+            <li><a href="/blocked_lists" data-toggel="tab">Blocked Lists</a></li>
+        </ul>
+        <ul>
+            <form action="/home/" method="POST">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Screen Name</th>
+                        </tr>
+                    </thead>
+                    
+                    {% csrf_token %}
+                    {% for follower in followers %}
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="followers" value="{{ follower.0 }}">
+                            </td>
+                            <td>{{ follower.1 }}</td>
+                            <td>{{ follower.2 }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <button type="submit" class="btn btn-danger">Block users</button>
+                <button type="button" class="btn">Clear all</button>
+            </form>
+        </ul>
+    </div>
+{% endblock body %}

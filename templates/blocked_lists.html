@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="tabbable">
+        <ul class="nav nav-tabs">
+            <li> <a href="/home" data-toggel="tab">Followers</a></li>
+            <li><a href="/blocked_users" data-toggel="tab">Blocked Users</a></li>
+            <li class="active"><a href="/blocked_lists" data-toggel="tab">Blocked Lists</a></li>
+        </ul>
+
+        {% if blocked_data.items %}
+
+            {% for user, blocked_users in blocked_data.items %}
+                <div class="accordion" id="accordion2">
+                    <div class="accordion-group">
+                        <form action="/blocked_lists" method="POST">
+                            <div class="accordion-heading">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#{{ user.2|slugify|upper }}">
+                                    <h4>{{ user.1 }} ({{ user.2 }})</h4>
+                                    <input type="hidden" name="user_list" value="{{ user.0 }}">
+                                </a>
+                                <div id="{{ user.2|slugify|upper }}" class="accordion-body collapse out">
+                                <div class="accordion-inner">
+                                    <table class="table table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Display Name</th>
+                                                <th>Twitter ID</th>
+                                            </tr>
+                                        </thead>
+                                        {% for blocked_user in blocked_users %}
+                                        <tr>
+                                            <td><input type="checkbox" name="blocked_users" value="{{ blocked_user.0 }}" checked></td>
+                                            <td>{{ blocked_user.1 }}</td>
+                                            <td>{{ blocked_user.2 }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
+                                    <button class="btn btn-mini btn-danger" type="submit">Block Users</button>
+                                  </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div>
+                <p>No Blocked List!</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock body %}

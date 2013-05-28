@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="tabbable">
+        <ul class="nav nav-tabs">
+            <li> <a href="/home" data-toggel="tab">Followers</a></li>
+            <li class="active"><a href="/blocked_users" data-toggel="tab">Blocked Users</a></li>
+            <li><a href="/blocked_lists" data-toggel="tab">Blocked Lists</a></li>
+        </ul>
+        <ul>
+            {% if blocked_users %}
+                <form action="/blocked_users" method="POST">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Name</th>
+                                <th>Screen Name</th>
+                            </tr>
+                        </thead>
+                        {% csrf_token %}
+                        {% for blocked_user in blocked_users %}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="blocked_users" value="{{ blocked_user.0 }}">
+                                </td>
+                                <td>{{ blocked_user.1 }}</td>
+                                <td>{{ blocked_user.2 }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <button type="submit" class="btn btn-danger">Unblock users</button>
+                    <button type="button" class="btn">Clear all</button>
+                </form>
+            {% else %}
+                <div>
+                    <p>No Blocked Users!</p>
+                </div>
+            {% endif %}
+        </ul>
+    </div>
+{% endblock body %}

@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Tweet Block</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="{{ MEDIA_URL }}bootstrap/css/datepicker.css" rel="stylesheet">
+    <link rel="icon" href="{{ MEDIA_URL }}images/twitter-bird.png" type="image/gif" sizes="16x16">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <!--  <link href="http://peopleops.org/public/bootstrap/css/bootstrap.css" rel="stylesheet"> -->
+    
+    <link href="http://peopleops.org/bootstrap/css/bootstrap.css" rel="stylesheet">  
+    <script type="text/javascript" src="/twitter-bootstrap/twitter-bootstrap-v2/docs/assets/js/jquery.js"></script>
+    <script type="text/javascript" src="/twitter-bootstrap/twitter-bootstrap-v2/docs/assets/js/bootstrap-dropdown.js"></script>
+    <script src="http://www.eyecon.ro/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <script src="http://www.eyecon.ro/bootstrap-datepicker/js/jquery.js"></script>
+    
+    <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+    <style>
+	 body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+	/* 
+	Max width before this PARTICULAR table gets nasty
+	This query will take effect for any screen smaller than 760px
+	and also iPads specifically.
+	*/
+	@media 
+	only screen and (max-width: 760px),
+	(min-device-width: 768px) and (max-device-width: 1024px)  {
+	
+		/* Force table to not be like tables anymore */
+		table, thead, tbody, th, td, tr { 
+			display: block; 
+		}
+		
+		/* Hide table headers (but not display: none;, for accessibility) */
+		thead tr { 
+			position: absolute;
+			top: -9999px;
+			left: -9999px;
+		}
+		
+		tr { border: 2px solid #ADDFFF; }
+		
+		td { 
+			/* Behave  like a "row" */
+			border: none;
+			border-bottom: 1px solid #eee; 
+			position: relative;
+                        top: autopx;
+			padding-left: 50%;
+                        white-space: normal;
+                        text-align:left;
+		}
+		
+		td:before { 
+			/* Now like a table header */
+			position: relative;
+			/* Top/left values mimic padding */
+			top: autopx;
+			left: 6px;
+			width: 45%; 
+			padding-right: 10px; 
+			white-space: nowrap;
+                        text-align:left;
+                        font-weight: bold;
+		}
+		
+		td:before { content: attr(data-title)" :"; }
+
+
+	}
+	
+	/* Smartphones (portrait and landscape) ----------- */
+	@media only screen
+	and (min-device-width : 300px)
+	and (max-device-width : 320px) {
+		body { 
+			padding: 0; 
+			margin: 0; 
+			width: 320px; }
+		}
+	
+	/* iPads (portrait and landscape) ----------- */
+	@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+		body { 
+			width: 495px; 
+		}
+	}
+	
+	</style>
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+    
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-37892988-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+     
+	
+
+
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script>
+      $('.dropdown-toggle').dropdown()
+    </script>
+    <script type="text/javascript" language="javascript">
+        function validate() {
+            var uploadcontrol = document.getElementById('filename').value;
+            var ele = document.getElementById("showme");
+            
+            //Regular Expression for fileupload control.
+            var reg = /^(([a-zA-Z]:)|(\\{2}\w+)\$?)(\\(\w[\w].*))+(.csv|.CSV)$/;
+            
+            if (uploadcontrol.length > 0)
+            {
+            //Checks with the control value.
+                if (reg.test(uploadcontrol))
+                {
+                    ele.style.display = "none";
+                    return true;
+                }
+                else 
+                {
+                    //If the condition not satisfied shows error message.
+                    ele.style.display = "block";
+                    //alert("Only .csv file extensions are allowed!");
+                    return false;
+                }
+            }
+            else
+            {
+                //alert("Choose a .csv file!");
+                ele.style.display = "block";
+                return false;
+            }
+            return false;
+        } //End of function validate.
+    </script>
+      
+    <!-- Fav and touch icons -->
+    <!--<link rel="shortcut icon" href="http://peopleops.org/public/bootstrap/ico/favicon.ico">-->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://peopleops.org/public/bootstrap/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://peopleops.org/public/bootstrap/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://peopleops.org/public/bootstrap/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="http://peopleops.org/public/bootstrap/ico/apple-touch-icon-57-precomposed.png">
+	{%block script%}
+    {%endblock script%}
+  </head>
+
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="/">Welcome to Tweet Block</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+            </ul>
+              <ul class="nav pull-right">
+                      <li class="dropdown">
+                        <a href="#" id="drop3" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon-white"></i> {{ user }} <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
+                          <li><a tabindex="-1" href="/twitter/clear">Logout</a></li>
+                        </ul>
+                      </li>
+              </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+    
+    
+    
+     <div class="container-fluid">
+      <div class="row-fluid">
+          <div class="row-fluid">
+            {% block body %}
+            {% endblock body %}
+          </div><!--/row-->
+          </div>
+      </div><!--/row-->
+
+      <hr>
+
+      <footer>
+        <p>&nbsp&nbsp&nbsp&copy; 2013. All rights reserved</p>
+      </footer>
+
+    </div><!--/.fluid-container-->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://peopleops.org/public/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript">
+    
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-37486171-1']);
+      _gaq.push(['_trackPageview']);
+    
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/jquery.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap-datepicker.js"></script>
+ 
+
+  </body>
+</html>
