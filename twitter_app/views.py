@@ -57,10 +57,19 @@ def return_(request):
     if token.key != request.GET.get('oauth_token', 'no-token'):
         return HttpResponse("Something went wrong! Tokens do not match")
     verifier = request.GET.get('oauth_verifier')
-    print verifier
     access_token = exchange_request_token_for_access_token(CONSUMER,
                             token, params={'oauth_verifier':verifier})
     request.session['access_token'] = access_token.to_string()
+    token = oauth.OAuthToken.from_string(access_token.to_string())   
+    twit = Twitter(auth=OAuth(token.key, token.secret,
+                       CONSUMER_KEY, CONSUMER_SECRET)
+           )
+    login_user = twit.users.show(screen_name=twit.account.settings().get('screen_name'))
+    import pdb
+    pdb.set_trace()
+    request.session['login_id'] = login_user.get('id')
+    request.session['login_name'] = login_user.get('name')
+    request.session['login_screen_name'] = login_user.get('screen_name')
     #response = HttpResponseRedirect(reverse('twitter_oauth_friend_list'))
     return HttpResponseRedirect(reverse('home'))
     #return response

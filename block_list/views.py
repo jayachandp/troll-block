@@ -12,7 +12,7 @@ from block_twitter_test import settings
 import urlparse
 import oauth, httplib, time, datetime
 from twitter import *
-from models import Blocked_List
+from models import Blocked_List, Subscribed_List
 import json
 
 try:
@@ -60,7 +60,10 @@ def home(request):
     token = oauth.OAuthToken.from_string(access_token)   
     twit = Twitter(auth=OAuth(token.key, token.secret,
                 CONSUMER_KEY, CONSUMER_SECRET))
-    login_user = twit.users.show(screen_name=twit.account.settings().get('screen_name'))
+    login_id = request.session.get('login_id')
+    login_name = request.session.get('login_name')
+    login_screen_name = request.session.get('login_screen_name')
+    #login_user = twit.users.show(screen_name=twit.account.settings().get('screen_name'))
     #POST method lets you block the selected users
     if request.method == "POST":
         getids = request.POST.getlist('followers')
@@ -70,7 +73,7 @@ def home(request):
             blocked_ids.append(id_)
         #saving blocked ids in db
         try:
-            user_obj = Blocked_List.objects.get(user_id=login_user.get('id'))
+            user_obj = Blocked_List.objects.get(user_id=login_id)
             temp_list = eval(user_obj.blocked_users)
             for id_ in getids:
                 if id_ not in temp_list:
@@ -78,7 +81,7 @@ def home(request):
             user_obj.blocked_users = json.dumps(temp_list)
             user_obj.save()
         except:
-            user_obj = Blocked_List(user_id=login_user.get('id'),
+            user_obj = Blocked_List(user_id=login_id,
                                         share='no')
             temp_list = list()
             for id_ in getids:
@@ -90,7 +93,7 @@ def home(request):
     response = twit.blocks.ids()
     getids = response.get('ids')
     try:
-        user_obj = Blocked_List.objects.get(user_id=login_user.get('id'))
+        user_obj = Blocked_List.objects.get(user_id=login_id)
         temp_list = eval(user_obj.blocked_users)
         for id_ in getids:
             if id_ not in temp_list:
@@ -100,7 +103,7 @@ def home(request):
     except:
         for id_ in getids:
             blocked_ids.append(id_)
-        blocked_list = Blocked_List(user_id=login_user.get('id'),
+        blocked_list = Blocked_List(user_id=login_id,
                                         share='no',
                                         blocked_users=json.dumps(blocked_ids))
         blocked_list.save()
@@ -112,7 +115,7 @@ def home(request):
                           getids[i].get('name'),
                           getids[i].get('screen_name'))
                         )
-    data = {'followers': followers,'user':login_user.get('name')}
+    data = {'followers': followers,'user':login_name}
     return render_to_response("home.html",
                               data,
                               context_instance=RequestContext(request))
@@ -125,7 +128,10 @@ def blocked_users(request):
     token = oauth.OAuthToken.from_string(access_token)   
     twit = Twitter(auth=OAuth(token.key, token.secret,
                 CONSUMER_KEY, CONSUMER_SECRET))
-    login_user = twit.users.show(screen_name=twit.account.settings().get('screen_name'))
+    login_id = request.session.get('login_id')
+    login_name = request.session.get('login_name')
+    login_screen_name = request.session.get('login_screen_name')
+    #login_user = twit.users.show(screen_name=twit.account.settings().get('screen_name'))
     if request.method == "POST":
         getids = request.POST.getlist('blocked_users')
         for id_ in getids:
@@ -139,7 +145,7 @@ def blocked_users(request):
                           getids[i].get('name'),
                           getids[i].get('screen_name'))
                         )
-    data = {'blocked_users': blocked_users,'user':login_user.get('name')}
+    data = {'blocked_users': blocked_users,'user':login_name}
     return render_to_response("blocked_users.html", data,
                                   context_instance=RequestContext(request))
 
@@ -153,28 +159,41 @@ def blocked_lists(request):
                 CONSUMER_KEY, CONSUMER_SECRET))
     data = dict()
     blocked_data = dict()
+    login_id = request.session.get('login_id')
+    login_name = request.session.get('login_name')
+    login_screen_name = request.session.get('login_screen_name')
     login_user = twit.users.show(screen_name=twit.account.settings().get('screen_name'))
     if request.method == "POST":
-        #to do: block users
         getids = request.POST.getlist('blocked_users')
         try:
-            user_obj = Blocked_List.objects.get(user_id=login_user.get('id'))
-            temp_list = eval(user_obj.blocked_users)
+            user_obj = Blocked_List.objects.get(user_id=login_id)
+            block_list = eval(user_obj.blocked_users)
             for id_ in getids:
-                response = twit.blocks.create(user_id=id_)
-                if id_ not in temp_list:
-                    temp_list.append(id_)
-            user_obj.blocked_users = json.dumps(temp_list)
-            user_obj.save()
+                response = twit.blocks.destroy(user_id=id_)
+                if id_ in block_list:
+                    block_list.remove(id_)
+            if len(block_list) == 0:
+                user_obj.delete()
+            else:
+                user_obj.blocked_users = block_list
+                user_obj.save()
+            subcribedListObj = Subscribed_List.objects.get(user_id=login_id)
+            subcribedListObj.delete()
         except:
-            user_obj = Blocked_List(user_id=login_user.get('id'), share='no')
             temp_list = list()
+            user_list = request.POST.getlist('user_list')
             for id_ in getids:
                 response = twit.blocks.create(user_id=id_)
                 temp_list.append(id_)
+            user_obj = Blocked_List(user_id=login_id, share='no')
             user_obj.blocked_users = json.dumps(temp_list)
             user_obj.save()
-    getids = twit.friends.ids(user_id=login_user.get('id')).get('ids')
+            import pdb
+            pdb.set_trace()
+            subcribedListObj = Subscribed_List(user_id=login_id,
+                                               subscribed_users=json.dumps(user_list))
+            subcribedListObj.save()
+    getids = twit.friends.ids(user_id=login_id).get('ids')
     #check the ids in db for loop
     for id_ in getids:
         try:
@@ -183,16 +202,24 @@ def blocked_lists(request):
             if (user_obj.share == 'no') and (eval(user_obj.blocked_users) != []):
                 #append to data
                 friend_blocks = list()
+                try:
+                    subcribedListObj = Subscribed_List.objects.get(user_id=login_id)
+                    if user_obj.user_id in eval(subcribedListObj.subscribed_users):
+                        alredy_subscribed = False
+                    else:
+                        alredy_subscribed = False
+                except:
+                    alredy_subscribed = False
                 for blocked_id in eval(user_obj.blocked_users):
                     blocked_user = twit.users.show(user_id=blocked_id)
                     friend_blocks.append((blocked_id,
                                          blocked_user.get('name'),
-                                         blocked_user.get('screen_name')
+                                         blocked_user.get('screen_name'),
                                          ))
                 blocked_data[(friend.get('id'),friend.get('name'),
-                      friend.get('screen_name'))] = friend_blocks
+                      friend.get('screen_name'),str(alredy_subscribed))] = friend_blocks
         except:
             pass
-    data = {'blocked_data': blocked_data,'user':login_user.get('name')}
+    data = {'blocked_data': blocked_data,'user':login_name}
     return render_to_response("blocked_lists.html", data,
                               context_instance=RequestContext(request))
