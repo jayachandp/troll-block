@@ -65,8 +65,6 @@ def return_(request):
                        CONSUMER_KEY, CONSUMER_SECRET)
            )
     login_user = twit.users.show(screen_name=twit.account.settings().get('screen_name'))
-    import pdb
-    pdb.set_trace()
     request.session['login_id'] = login_user.get('id')
     request.session['login_name'] = login_user.get('name')
     request.session['login_screen_name'] = login_user.get('screen_name')
