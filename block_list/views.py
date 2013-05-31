@@ -12,8 +12,9 @@ from block_twitter_test import settings
 import urlparse
 import oauth, httplib, time, datetime
 from twitter import *
-from models import Blocked_List, Subscribed_List
+from models import Blocked_List
 import json
+from Twit import Twit
 
 try:
     import simplejson
@@ -47,7 +48,6 @@ def index(request):
 def logout(request):
     try:
         del request.session['access_token']
-        #del request.session['unauthed_token']
     except KeyError:
         pass
     return HttpResponseRedirect(reverse('twitter_oauth_unauth'))
@@ -56,20 +56,21 @@ def logout(request):
 def home(request):
     access_token = request.session.get('access_token', None)
     if not access_token:
-        return HttpResponse("You need an access token!")
-    token = oauth.OAuthToken.from_string(access_token)   
+        return HttpResponseRedirect(reverse('index'))
+    token = oauth.OAuthToken.from_string(access_token)
     twit = Twitter(auth=OAuth(token.key, token.secret,
                 CONSUMER_KEY, CONSUMER_SECRET))
     login_id = request.session.get('login_id')
     login_name = request.session.get('login_name')
     login_screen_name = request.session.get('login_screen_name')
-    #login_user = twit.users.show(screen_name=twit.account.settings().get('screen_name'))
+    twitr = Twit(access_token, login_id, login_name, login_screen_name)
     #POST method lets you block the selected users
     if request.method == "POST":
         getids = request.POST.getlist('followers')
         blocked_ids = list()
         for id_ in getids:
-            response = twit.blocks.create(user_id=id_)
+            #response = twit.blocks.create(user_id=id_)
+            twitr.block_user(id_)
             blocked_ids.append(id_)
         #saving blocked ids in db
         try:
@@ -78,7 +79,6 @@ def home(request):
         except:
             user_obj = Blocked_List(user_id=login_id,
                                         share='no')
-        #Changed DB and included blocked list
             temp_list = list()
         for id_ in getids:
             if id_ not in temp_list:
@@ -87,8 +87,7 @@ def home(request):
         user_obj.save()
     data = dict()
     blocked_ids = list()
-    response = twit.blocks.ids()
-    getids = response.get('ids')
+    getids = twitr.get_blocked_ids()
     try:
         blockedListObj = Blocked_List.objects.get(user_id=login_id)
         temp_list = eval(blockedListObj.blocked_users)
@@ -103,13 +102,12 @@ def home(request):
                                         share='no',
                                         blocked_users=blocked_ids)
     blockedListObj.save()
-    response = twit.followers.list()
-    getids = response.get('users')
+    getids = twitr.get_followers()
     followers = list()
-    for i in range(len(getids)):
-        followers.append((getids[i].get('id'),
-                          getids[i].get('name'),
-                          getids[i].get('screen_name'))
+    for id_ in getids:
+        followers.append((id_.get('id'),
+                          id_.get('name'),
+                          id_.get('screen_name'))
                         )
     data = {'followers': followers,'user':login_name}
     return render_to_response("home.html",
@@ -127,7 +125,7 @@ def blocked_users(request):
     login_id = request.session.get('login_id')
     login_name = request.session.get('login_name')
     login_screen_name = request.session.get('login_screen_name')
-    #login_user = twit.users.show(screen_name=twit.account.settings().get('screen_name'))
+    twitr = Twit(access_token, login_id, login_name, login_screen_name)
     if request.method == "POST":
         getids = request.POST.getlist('blocked_users')
         for id_ in getids:
@@ -136,10 +134,10 @@ def blocked_users(request):
     blocked_users = list()
     response = twit.blocks.list()
     getids = response.get('users')
-    for i in range(len(getids)):
-        blocked_users.append((getids[i].get('id'),
-                          getids[i].get('name'),
-                          getids[i].get('screen_name'))
+    for id_ in getids:
+        blocked_users.append((id_.get('id'),
+                          id_.get('name'),
+                          id_.get('screen_name'))
                         )
     data = {'blocked_users': blocked_users,'user':login_name}
     return render_to_response("blocked_users.html", data,
@@ -156,7 +154,7 @@ def blocked_lists(request):
     login_id = request.session.get('login_id')
     login_name = request.session.get('login_name')
     login_screen_name = request.session.get('login_screen_name')
-    login_user = twit.users.show(screen_name=twit.account.settings().get('screen_name'))
+    twitr = Twit(access_token, login_id, login_name, login_screen_name)
     if request.method == "POST":
         getids = request.POST.getlist('blocked_users') 
         user_id = int(request.POST.getlist('user_list')[0])
