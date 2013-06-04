@@ -14,7 +14,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'blocktweetdb',                      #blocktweetdb tweetdb  Or path to database file if using sqlite3.
+        'NAME': 'tweetdb',                      #blocktweetdb tweetdb  Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -134,16 +134,16 @@ INSTALLED_APPS = (
 )
 
 #Heroku
-#CONSUMER_KEY = 'D6YrV57bNlgpcviNW3sOpg'
-#CONSUMER_SECRET = 'T4YlIE2vgI2sIOjziJp57j97CDx8y05DBzUgcr8YmA'
-#ACCESS_TOKEN = '136843335-fKGQEKi8W6R8XOYvxKoxk3nV9V4J09NuN6kZwVpU'
+CONSUMER_KEY = 'D6YrV57bNlgpcviNW3sOpg'
+CONSUMER_SECRET = 'T4YlIE2vgI2sIOjziJp57j97CDx8y05DBzUgcr8YmA'
+ACCESS_TOKEN = '136843335-fKGQEKi8W6R8XOYvxKoxk3nV9V4J09NuN6kZwVpU'
 ACCESS_TOKEN_SECRET = 'ekL7TYmjF9KPrhXfS04tHTjk2u7NFmxcmUj0Q64'
 
 #Local
-CONSUMER_KEY = 'GznGRZ6dl6jAuVckmx6mBQ'
-CONSUMER_SECRET = 'esrtz7KzaaBefUYwcXP19fQh0CelLaz46SFlfNGeq4'
-ACCESS_TOKEN = '136843335-THhkenU7PAdvCehHQxSSYNetQvMw2Wh34Ed20p54'
-ACCESS_TOKEN_SECRET = 'pgtFUrETM5bcL5oBGk38GB0EjHOq5Nlj0FP2UuxITk'
+# CONSUMER_KEY = 'GznGRZ6dl6jAuVckmx6mBQ'
+# CONSUMER_SECRET = 'esrtz7KzaaBefUYwcXP19fQh0CelLaz46SFlfNGeq4'
+# ACCESS_TOKEN = '136843335-THhkenU7PAdvCehHQxSSYNetQvMw2Wh34Ed20p54'
+# ACCESS_TOKEN_SECRET = 'pgtFUrETM5bcL5oBGk38GB0EjHOq5Nlj0FP2UuxITk'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -176,5 +176,5 @@ LOGGING = {
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-#import dj_database_url
-#DATABASES['default'] =  dj_database_url.config()
+import dj_database_url
+DATABASES['default'] =  dj_database_url.config()

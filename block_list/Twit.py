@@ -30,7 +30,7 @@ class Twit:
     
     def __init__(self, request):
         access_token = request.session.get('access_token', None)
-        login_id = request.session.get('login_id')
+        login_id = int(request.session.get('login_id'))
         login_name = request.session.get('login_name')
         login_screen_name = request.session.get('login_screen_name')
         token = oauth.OAuthToken.from_string(access_token)
@@ -64,7 +64,8 @@ class Twit:
         response = self.twit.blocks.destroy(user_id=user_id)
     
     def get_friends(self):
-        return self.twit.friends.ids(user_id=self.login_id)
+        response = self.twit.friends.list(user_id=self.login_id)
+        return response.get('users')
     
     def get_friends_ids(self):
         return self.twit.friends.ids(user_id=self.login_id).get('ids')
