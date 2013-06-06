@@ -165,6 +165,9 @@ def blocked_lists(request):
             except:
                 pass
         friendsList = twitr.get_friends()
+        import pdb
+        pdb.set_trace()
+        
         for friend in friendsList:
             if not friend['id'] in followers_ids:
                 try:
