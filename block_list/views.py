@@ -41,7 +41,7 @@ def home(request):
                 temp_list = list()
             for id_ in getids:
                 if id_ not in temp_list:
-                    temp_list.append(id_)
+                    temp_list.append(int(id_))
             user_obj.blocked_users = temp_list
             user_obj.save()
         data = dict()
@@ -52,11 +52,11 @@ def home(request):
             temp_list = eval(blockedListObj.blocked_users)
             for id_ in getids:
                 if id_ not in temp_list:
-                    temp_list.append(id_)
+                    temp_list.append(int(id_))
             blockedListObj.blocked_users = temp_list
         except:
             for id_ in getids:
-                blocked_ids.append(id_)
+                blocked_ids.append(int(id_))
             blockedListObj = Blocked_List(user_id=twitr.login_id,
                                             share='no',
                                             blocked_users=blocked_ids)
@@ -79,12 +79,14 @@ def blocked_users(request):
     if "access_token" in request.session:
         twitr = Twit(request)
         blockListObj = Blocked_List.objects.get(user_id=twitr.login_id)
+        blockedUsersList =  eval(blockListObj.blocked_users)
         if request.method == "POST":
             getids = request.POST.getlist('blocked_users')
             for id_ in getids:
                 response = twitr.unblock_user(id_)
-                blockListObj.blocked_users.remove(int(id_))
-        blockListObj.save()
+                blockedUsersList.remove(int(id_))
+            blockListObj.blocked_users = blockedUsersList
+            blockListObj.save()
         data = dict()
         blocked_users = list()
         getids = twitr.get_blocked_users()
