@@ -150,6 +150,12 @@
             }
             return false;
         } //End of function validate.
+
+        function changeShare(shareStatus){
+          $.getJSON("/change-share?shareStatus="+shareStatus,function(data){
+            return false;
+          });
+        }
     </script>
       
     <!-- Fav and touch icons -->
@@ -177,12 +183,12 @@
               <li class="active"><a href="#">Home</a></li>
             </ul>
               <ul class="nav pull-right">
-                      <li class="dropdown">
-                        <a href="#" id="drop3" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon-white"></i> {{ user }} <b class="caret"></b></a>
-                        <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
-                          <li><a tabindex="-1" href="/twitter/clear">Logout</a></li>
-                        </ul>
-                      </li>
+                <li class="dropdown">
+                  <a href="#" id="drop3" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon-white"></i> {{ user }} <b class="caret"></b></a>
+                  <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
+                    <li><a tabindex="-1" href="/twitter/clear">Logout</a></li>
+                  </ul>
+                </li>
               </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -194,6 +200,25 @@
      <div class="container-fluid">
       <div class="row-fluid">
           <div class="row-fluid">
+            Share Your Block List: &nbsp&nbsp
+            <span class="help-inline">
+              <div class="btn-group" data-toggle="buttons-radio">
+                {% if share == 'public' %}
+                  <button type="button" class="btn btn-primary active">Public</button>
+                  <button type="button" class="btn btn-primary" onclick="changeShare('private')">Private</button>
+                  <button type="button" class="btn btn-primary" onclick="changeShare('no')">No</button>
+                {% elif share == 'private' %}
+                  <button type="button" class="btn btn-primary" onclick="changeShare('public')">Public</button>
+                  <button type="button" class="btn btn-primary active">Private</button>
+                  <button type="button" class="btn btn-primary" onclick="changeShare('no')">No</button>
+                {% elif share == 'no' %}
+                  <button type="button" class="btn btn-primary" onclick="changeShare('public')">Public</button>
+                  <button type="button" class="btn btn-primary" onclick="changeShare('private')">Private</button>
+                  <button type="button" class="btn btn-primary active">No</button>
+                {% endif %}
+              </div>
+            </span>
+            <br><br><br>
             {% block body %}
             {% endblock body %}
           </div><!--/row-->
