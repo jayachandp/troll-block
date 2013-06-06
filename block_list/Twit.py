@@ -20,25 +20,15 @@ CONSUMER = oauth.OAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET)
 CONNECTION = httplib.HTTPSConnection(SERVER)
 
 class Twit:
-    #def __init__(self, access_token, login_id, login_name, login_screen_name):
-    #    token = oauth.OAuthToken.from_string(access_token)
-    #    self.twit = Twitter(auth=OAuth(token.key, token.secret,
-    #                                   CONSUMER_KEY, CONSUMER_SECRET))
-    #    self.login_id = login_id
-    #    self.login_name = login_name
-    #    self.login_screen_name = login_screen_name
     
     def __init__(self, request):
+        self.login_id = request.session.get('login_id')
+        self.login_name = request.session.get('login_name')
+        self.login_screen_name = request.session.get('login_screen_name')
         access_token = request.session.get('access_token', None)
-        login_id = request.session.get('login_id')
-        login_name = request.session.get('login_name')
-        login_screen_name = request.session.get('login_screen_name')
         token = oauth.OAuthToken.from_string(access_token)
         self.twit = Twitter(auth=OAuth(token.key, token.secret,
                                        CONSUMER_KEY, CONSUMER_SECRET))
-        self.login_id = login_id
-        self.login_name = login_name
-        self.login_screen_name = login_screen_name
     
     def get_id(self):
         return self.login_id
